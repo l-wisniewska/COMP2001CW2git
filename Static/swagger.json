@@ -1,0 +1,207 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "version": "1.0.0",
+        "title": "Trail API",
+        "description": "API interface for the trail microservice."
+    },
+    "host": "127.0.0.1:5000",
+    "basePath": "/api",
+    "schemes": ["http"],
+    "tags": [
+        {
+            "name": "users",
+            "description": "CRUD operations for users, including login"
+        },
+        {
+            "name": "trails",
+            "description": "CRUD operations for trails"
+        }
+    ],
+    "paths": {
+        "/login": {
+            "post": {
+                "summary": "Login to get JWT access token for authorization",
+                "tags": ["users"],
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "email": { "type": "string" },
+                                "password": { "type": "string" }
+                            },
+                            "required": ["email", "password"]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Token generated successfully",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "access_token": { "type": "string" }
+                            }
+                        }
+                    },
+                    "400": { "description": "Invalid input" },
+                    "401": { "description": "Unauthorized" }
+                }
+            }
+        },
+        "/users": {
+            "get": {
+                "summary": "Get all users",
+                "tags": ["users"],
+                "responses": {
+                    "200": {
+                        "description": "List of all users",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "UserID": { "type": "integer" },
+                                    "Email_address": { "type": "string" },
+                                    "Role": { "type": "string" }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "summary": "Create a new user",
+                "tags": ["users"],
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "Email_address": { "type": "string" },
+                                "Role": { "type": "string" }
+                            },
+                            "required": ["Email_address", "Role"]
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": { "description": "User created successfully" },
+                    "400": { "description": "Invalid input" }
+                }
+            }
+        },
+        "/trails": {
+            "get": {
+                "summary": "Get all trails",
+                "tags": ["trails"],
+                "responses": {
+                    "200": {
+                        "description": "List of all trails",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "TrailID": { "type": "integer" },
+                                    "TrailName": { "type": "string" },
+                                    "Difficulty": { "type": "string" },
+                                    "Location": { "type": "string" },
+                                    "Latitude": { "type": "number" },
+                                    "Longitude": { "type": "number" },
+                                    "Length": { "type": "number" },
+                                    "ElevationGain": { "type": "integer" },
+                                    "TimeTaken": { "type": "integer" },
+                                    "Description": { "type": "string" }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "summary": "Create a new trail",
+                "tags": ["trails"],
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "TrailName": { "type": "string" },
+                                "Difficulty": { "type": "string" },
+                                "Location": { "type": "string" },
+                                "Latitude": { "type": "number" },
+                                "Longitude": { "type": "number" },
+                                "Length": { "type": "number" },
+                                "ElevationGain": { "type": "integer" },
+                                "TimeTaken": { "type": "integer" },
+                                "Description": { "type": "string" }
+                            },
+                            "required": ["TrailName", "Difficulty", "Location"]
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": { "description": "Trail created successfully" },
+                    "400": { "description": "Invalid input" }
+                }
+            }
+        },
+        "/trails/{trail_id}": {
+            "get": {
+                "summary": "Get trail by ID",
+                "tags": ["trails"],
+                "parameters": [
+                    {
+                        "name": "trail_id",
+                        "in": "path",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Trail details",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "TrailID": { "type": "integer" },
+                                "TrailName": { "type": "string" },
+                                "Difficulty": { "type": "string" },
+                                "Location": { "type": "string" }
+                            }
+                        }
+                    },
+                    "404": { "description": "Trail not found" }
+                }
+            },
+            "delete": {
+                "summary": "Delete trail by ID",
+                "tags": ["trails"],
+                "parameters": [
+                    {
+                        "name": "trail_id",
+                        "in": "path",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": { "description": "Trail deleted successfully" },
+                    "404": { "description": "Trail not found" }
+                }
+            }
+        }
+    }
+}
+
