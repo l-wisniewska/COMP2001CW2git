@@ -1,0 +1,137 @@
+{
+  "architecture": "amd64",
+  "config": {
+    "ExposedPorts": {
+      "8000/tcp": {}
+    },
+    "Env": [
+      "PATH=/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+      "GPG_KEY=7169605F62C751356D054A26A821E680E5FA6305",
+      "PYTHON_VERSION=3.13.1",
+      "PYTHON_SHA256=9cf9427bee9e2242e3877dd0f6b641c1853ca461f39d6503ce260a59c80bf0d9",
+      "ACCEPT_EULA=Y"
+    ],
+    "Cmd": [
+      "python",
+      "main.py"
+    ],
+    "ArgsEscaped": true
+  },
+  "created": "2025-01-14T12:52:11.982844622Z",
+  "history": [
+    {
+      "created": "2024-12-04T02:30:19Z",
+      "created_by": "# debian.sh --arch 'amd64' out/ 'bookworm' '@1736726400'",
+      "comment": "debuerreotype 0.15"
+    },
+    {
+      "created": "2024-12-04T02:30:19Z",
+      "created_by": "ENV PATH=/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+      "comment": "buildkit.dockerfile.v0",
+      "empty_layer": true
+    },
+    {
+      "created": "2024-12-04T02:30:19Z",
+      "created_by": "RUN /bin/sh -c set -eux; \tapt-get update; \tapt-get install -y --no-install-recommends \t\tca-certificates \t\tnetbase \t\ttzdata \t; \trm -rf /var/lib/apt/lists/* # buildkit",
+      "comment": "buildkit.dockerfile.v0"
+    },
+    {
+      "created": "2024-12-04T02:30:19Z",
+      "created_by": "ENV GPG_KEY=7169605F62C751356D054A26A821E680E5FA6305",
+      "comment": "buildkit.dockerfile.v0",
+      "empty_layer": true
+    },
+    {
+      "created": "2024-12-04T02:30:19Z",
+      "created_by": "ENV PYTHON_VERSION=3.13.1",
+      "comment": "buildkit.dockerfile.v0",
+      "empty_layer": true
+    },
+    {
+      "created": "2024-12-04T02:30:19Z",
+      "created_by": "ENV PYTHON_SHA256=9cf9427bee9e2242e3877dd0f6b641c1853ca461f39d6503ce260a59c80bf0d9",
+      "comment": "buildkit.dockerfile.v0",
+      "empty_layer": true
+    },
+    {
+      "created": "2024-12-04T02:30:19Z",
+      "created_by": "RUN /bin/sh -c set -eux; \t\tsavedAptMark=\"$(apt-mark showmanual)\"; \tapt-get update; \tapt-get install -y --no-install-recommends \t\tdpkg-dev \t\tgcc \t\tgnupg \t\tlibbluetooth-dev \t\tlibbz2-dev \t\tlibc6-dev \t\tlibdb-dev \t\tlibffi-dev \t\tlibgdbm-dev \t\tliblzma-dev \t\tlibncursesw5-dev \t\tlibreadline-dev \t\tlibsqlite3-dev \t\tlibssl-dev \t\tmake \t\ttk-dev \t\tuuid-dev \t\twget \t\txz-utils \t\tzlib1g-dev \t; \t\twget -O python.tar.xz \"https://www.python.org/ftp/python/${PYTHON_VERSION%%[a-z]*}/Python-$PYTHON_VERSION.tar.xz\"; \techo \"$PYTHON_SHA256 *python.tar.xz\" | sha256sum -c -; \twget -O python.tar.xz.asc \"https://www.python.org/ftp/python/${PYTHON_VERSION%%[a-z]*}/Python-$PYTHON_VERSION.tar.xz.asc\"; \tGNUPGHOME=\"$(mktemp -d)\"; export GNUPGHOME; \tgpg --batch --keyserver hkps://keys.openpgp.org --recv-keys \"$GPG_KEY\"; \tgpg --batch --verify python.tar.xz.asc python.tar.xz; \tgpgconf --kill all; \trm -rf \"$GNUPGHOME\" python.tar.xz.asc; \tmkdir -p /usr/src/python; \ttar --extract --directory /usr/src/python --strip-components=1 --file python.tar.xz; \trm python.tar.xz; \t\tcd /usr/src/python; \tgnuArch=\"$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)\"; \t./configure \t\t--build=\"$gnuArch\" \t\t--enable-loadable-sqlite-extensions \t\t--enable-optimizations \t\t--enable-option-checking=fatal \t\t--enable-shared \t\t--with-lto \t\t--with-ensurepip \t; \tnproc=\"$(nproc)\"; \tEXTRA_CFLAGS=\"$(dpkg-buildflags --get CFLAGS)\"; \tLDFLAGS=\"$(dpkg-buildflags --get LDFLAGS)\"; \tLDFLAGS=\"${LDFLAGS:--Wl},--strip-all\"; \tmake -j \"$nproc\" \t\t\"EXTRA_CFLAGS=${EXTRA_CFLAGS:-}\" \t\t\"LDFLAGS=${LDFLAGS:-}\" \t; \trm python; \tmake -j \"$nproc\" \t\t\"EXTRA_CFLAGS=${EXTRA_CFLAGS:-}\" \t\t\"LDFLAGS=${LDFLAGS:--Wl},-rpath='\\$\\$ORIGIN/../lib'\" \t\tpython \t; \tmake install; \t\tcd /; \trm -rf /usr/src/python; \t\tfind /usr/local -depth \t\t\\( \t\t\t\\( -type d -a \\( -name test -o -name tests -o -name idle_test \\) \\) \t\t\t-o \\( -type f -a \\( -name '*.pyc' -o -name '*.pyo' -o -name 'libpython*.a' \\) \\) \t\t\\) -exec rm -rf '{}' + \t; \t\tldconfig; \t\tapt-mark auto '.*' > /dev/null; \tapt-mark manual $savedAptMark; \tfind /usr/local -type f -executable -not \\( -name '*tkinter*' \\) -exec ldd '{}' ';' \t\t| awk '/=>/ { so = $(NF-1); if (index(so, \"/usr/local/\") == 1) { next }; gsub(\"^/(usr/)?\", \"\", so); printf \"*%s\\n\", so }' \t\t| sort -u \t\t| xargs -r dpkg-query --search \t\t| cut -d: -f1 \t\t| sort -u \t\t| xargs -r apt-mark manual \t; \tapt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; \trm -rf /var/lib/apt/lists/*; \t\texport PYTHONDONTWRITEBYTECODE=1; \tpython3 --version; \tpip3 --version # buildkit",
+      "comment": "buildkit.dockerfile.v0"
+    },
+    {
+      "created": "2024-12-04T02:30:19Z",
+      "created_by": "RUN /bin/sh -c set -eux; \tfor src in idle3 pip3 pydoc3 python3 python3-config; do \t\tdst=\"$(echo \"$src\" | tr -d 3)\"; \t\t[ -s \"/usr/local/bin/$src\" ]; \t\t[ ! -e \"/usr/local/bin/$dst\" ]; \t\tln -svT \"$src\" \"/usr/local/bin/$dst\"; \tdone # buildkit",
+      "comment": "buildkit.dockerfile.v0"
+    },
+    {
+      "created": "2024-12-04T02:30:19Z",
+      "created_by": "CMD [\"python3\"]",
+      "comment": "buildkit.dockerfile.v0",
+      "empty_layer": true
+    },
+    {
+      "created": "2025-01-14T12:50:07.864724882Z",
+      "created_by": "ENV ACCEPT_EULA=Y",
+      "comment": "buildkit.dockerfile.v0",
+      "empty_layer": true
+    },
+    {
+      "created": "2025-01-14T12:50:07.864724882Z",
+      "created_by": "RUN /bin/sh -c apt-get update -y && apt-get update   && apt-get install -y --no-install-recommends curl gcc g++ gnupg unixodbc-dev # buildkit",
+      "comment": "buildkit.dockerfile.v0"
+    },
+    {
+      "created": "2025-01-14T12:50:11.106255577Z",
+      "created_by": "RUN /bin/sh -c curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -   && curl https://packages.microsoft.com/config/debian/10/prod.list > /etc/apt/sources.list.d/mssql-release.list   && apt-get update   && apt-get install -y --no-install-recommends --allow-unauthenticated msodbcsql17 mssql-tools   && echo 'export PATH=\"$PATH:/opt/mssql-tools/bin\"' >> ~/.bash_profile   && echo 'export PATH=\"$PATH:/opt/mssql-tools/bin\"' >> ~/.bashrc # buildkit",
+      "comment": "buildkit.dockerfile.v0"
+    },
+    {
+      "created": "2025-01-14T12:51:55.291439937Z",
+      "created_by": "COPY . . # buildkit",
+      "comment": "buildkit.dockerfile.v0"
+    },
+    {
+      "created": "2025-01-14T12:51:57.143435137Z",
+      "created_by": "RUN /bin/sh -c pip install --upgrade pip # buildkit",
+      "comment": "buildkit.dockerfile.v0"
+    },
+    {
+      "created": "2025-01-14T12:52:11.605522221Z",
+      "created_by": "RUN /bin/sh -c pip install -r requirements.txt # buildkit",
+      "comment": "buildkit.dockerfile.v0"
+    },
+    {
+      "created": "2025-01-14T12:52:11.982844622Z",
+      "created_by": "RUN /bin/sh -c apt-get -y clean # buildkit",
+      "comment": "buildkit.dockerfile.v0"
+    },
+    {
+      "created": "2025-01-14T12:52:11.982844622Z",
+      "created_by": "EXPOSE map[8000/tcp:{}]",
+      "comment": "buildkit.dockerfile.v0",
+      "empty_layer": true
+    },
+    {
+      "created": "2025-01-14T12:52:11.982844622Z",
+      "created_by": "CMD [\"python\" \"main.py\"]",
+      "comment": "buildkit.dockerfile.v0",
+      "empty_layer": true
+    }
+  ],
+  "os": "linux",
+  "rootfs": {
+    "type": "layers",
+    "diff_ids": [
+      "sha256:f5fe472da25334617e6e6467c7ebce41e0ae5580e5bd0ecbf0d573bacd560ecb",
+      "sha256:52fc15be27b420bfb40eb5c05d987a48267ba43d5277e5505fc00a8eff167df3",
+      "sha256:e47eada9597c0a59b765450294565f1eb4be08aec044b41197ecf5f90d37d977",
+      "sha256:955362541777c2c7efb02f705fc9bbb2c7620a832096c6a56fea713a054d974b",
+      "sha256:c7984f37102ed6b06d8febdafb1e08ec59b544fb9f20a275f72a194d2bea52e7",
+      "sha256:dcbbb08967a44de05ab28009cc1867e23fdd850f4f4dc00d9fcc2316f9c73a17",
+      "sha256:3dc2478dc886bcbf77c0aeaeb21000937459c761feaa7c75a4b5325d4c06070b",
+      "sha256:55c94b45781ec36559e581dac4a143bd011fd96c5ae9718a55d5f952bcccdd4a",
+      "sha256:92efb48c72660c3322a5d1f94de5483a3d6e440d5fa3daa6207347a7353597fe",
+      "sha256:ec62a4e087b5897cbecc8c9766d0e71e2814c40db7842dc75b4d0090cf7e9ca2"
+    ]
+  }
+}
